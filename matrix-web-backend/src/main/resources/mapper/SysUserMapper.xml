@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.forezp.modules.system.mapper.SysUserMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="io.github.forezp.modules.system.entity.SysUser">
+        <result column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="user_id" property="userId" />
+        <result column="password" property="password" />
+        <result column="realname" property="realname" />
+        <result column="type" property="type" />
+        <result column="mobile" property="mobile" />
+        <result column="email" property="email" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="avatar" property="avatar" />
+        <result column="sex" property="sex" />
+        <collection property="roles" ofType="io.github.forezp.modules.system.entity.SysRole" javaType="java.util.List">
+            <result column="role_name" property="name"/>
+            <result column="role_role_id" property="roleId"/>
+        </collection>
+        <collection property="orgs" ofType="io.github.forezp.modules.system.entity.SysOrg" javaType="java.util.List">
+            <result column="simple_name" property="simpleName"/>
+            <result column="org_id" property="orgId"/>
+        </collection>
+        <collection property="menus" ofType="io.github.forezp.modules.system.entity.SysMenu" javaType="java.util.List">
+            <result column="code" property="code"/>
+            <result column="url" property="url"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        create_time,
+        create_by,
+        update_time,
+        update_by,
+        user_id, password, realname, type, mobile, email, remarks, status, avatar, sex
+    </sql>
+
+    <select id="searchUsers" resultMap="BaseResultMap">
+        SELECT a.id as id ,a.create_time as create_time, a.create_by as create_by,a.update_time as update_time,a.update_by as update_by
+        ,a.user_id as user_id,a.password as password,a.realname as realname,a.type as type,a.mobile as mobile
+        ,a.email as email,a.remarks as remarks ,a.status as status,a.avatar as avatar,a.sex as sex
+        ,c.name as role_name,c.role_id as role_role_id ,e.org_id as org_id,e.simple_name as simple_name,g.code as code,g.url as url
+        from sys_user a
+        LEFT JOIN  sys_user_role b on a.user_id=b.user_id
+        LEFT JOIN  sys_role c on b.role_id=c.role_id
+        LEFT JOIN sys_user_org d on a.user_id=d.user_id
+        left JOIN sys_org e on d.org_id =e.org_id
+        left join sys_role_menu f on f.role_id=c.role_id
+        left join sys_menu g on g.code=f.menu_code
+        <where>
+            <if test="userId != null and userId!='' ">
+                a.user_id = #{userId}
+            </if>
+
+            <if test="realname != null and realname!='' ">
+                AND a.realname = #{realname}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectUserRolePermission" resultMap="BaseResultMap">
+        SELECT a.id as id ,a.create_time as create_time, a.create_by as create_by,a.update_time as update_time,a.update_by as update_by
+        ,a.user_id as user_id,a.password as password,a.realname as realname,a.type as type,a.mobile as mobile
+        ,a.email as email,a.remarks as remarks ,a.status as status,a.avatar as avatar,a.sex as sex
+        ,c.name as role_name,c.role_id as role_role_id ,g.code as code,g.url as url
+        from sys_user a
+        LEFT JOIN  sys_user_role b on a.user_id=b.user_id
+        LEFT JOIN  sys_role c on b.role_id=c.role_id
+        left join sys_role_menu f on f.role_id=c.role_id
+        left join sys_menu g on g.code=f.menu_code
+        <where>
+            <if test="userId != null and userId!='' ">
+                a.user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
